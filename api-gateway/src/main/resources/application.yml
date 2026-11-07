@@ -1,0 +1,54 @@
+server:
+  port: 9080
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+      routes:
+        - id: auth
+          uri: http://auth-service:9081
+          predicates:
+            - Path=/api/auth, /api/auth/**
+        - id: accounts
+          uri: http://ledger-service:9082
+          predicates:
+            - Path=/api/accounts, /api/accounts/**
+        - id: ledger
+          uri: http://ledger-service:9082
+          predicates:
+            - Path=/api/ledger, /api/ledger/**
+        - id: transfer
+          uri: http://transfer-service:9083
+          predicates:
+            - Path=/api/transfers, /api/transfers/**
+        - id: beneficiaries
+          uri: http://beneficiary-service:9085
+          predicates:
+            - Path=/api/beneficiaries, /api/beneficiaries/**
+        - id: fraud
+          uri: http://fraud-service:9086
+          predicates:
+            - Path=/api/fraud, /api/fraud/**
+        - id: notification
+          uri: http://notification-service:9084
+          predicates:
+            - Path=/api/notifications, /api/notifications/**
+jwt:
+  secret: ${JWT_SECRET:replace-this-with-a-random-secret-at-least-32-bytes-long}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
